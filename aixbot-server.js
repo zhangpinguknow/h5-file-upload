@@ -24,8 +24,9 @@ aixbot.onEvent('enterSkill', (ctx) => {
 });
 
 // define text handler
-aixbot.hears('你是谁', (ctx) => {
-    ctx.speak(`我是${ctx.db.username}`).wait();
+aixbot.hears('我要洗车', (ctx) => {
+    // ctx.speak(`我是${ctx.db.username}`).wait();
+    ctx.speak('我是途虎养车').wait();
 });
 
 // define regex handler
