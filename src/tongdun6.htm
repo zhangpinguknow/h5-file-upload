@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TongDun</title>
+</head>
+
+<body>
+    <div>TongDun</div>
+    <h2></h2>
+</body>
+<script>
+//  sendMeassage()
+	var countScript = 0
+	var countTD = 0
+	var blackbox = ""
+    window.onload = function () {
+        zuceTD()
+        insertScript()
+
+        // system.onmessage = function (data) {
+        //     alert(data)
+
+
+            // window._fmOpt = {
+            //     partner: 'tuhu',
+            //     appName: 'tuhu_yidongzhan',
+            //     token: getQueryVariable("token")
+            // }
+
+            // const cimg = new Image(1, 1)
+            // cimg.onload = function () {
+            //     _fmOpt.imgLoaded = true
+            // }
+            // cimg.src =
+            //     'https://fp.fraudmetrix.cn/fp/clear.png?partnerCode=tuhu&appName=tuhu_yidongzhan&tokenId=' +
+            //     _fmOpt.token
+            // const fm = document.createElement('script')
+            // fm.type = 'text/javascript'
+            // fm.async = true
+            // fm.src = 'https://static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime() /
+            //     3600000).toFixed(0)
+            // fm.onload = function () {
+            //     loaded = true
+            // }
+            // fm.onerror = function () {}
+            // const s = document.getElementsByTagName('script')[0]
+            // s.parentNode.insertBefore(fm, s)
+
+        // };
+
+        // system.onmessage = function (data) {
+        //     document.body.querySelector('h2').innerHTML = data
+        // };
+        
+    }
+
+//  function getQueryVariable(variable) {
+//      var query = window.location.search.substring(1);
+//      var vars = query.split("&");
+//      for (var i = 0; i < vars.length; i++) {
+//          var pair = vars[i].split("=");
+//          if (pair[0] == variable) {
+//              return pair[1];
+//          }
+//      }
+//      return (false);
+//  }
+    function sendMeassage(data) {
+        if (typeof(system) !== 'undefined'){
+            system.postMessage(JSON.stringify(data));
+        }
+    }
+    function zuceTD(){
+    		_fmOpt = {
+            partner: 'tuhu',
+            appName: 'tuhu_yidongzhan',
+            token: 'tuhu' + "-" + new Date().getTime() + "-"+ Math.random().toString(16).substr(2),
+            fmb: true,
+            success: function(data) {
+                // 在成功完成采集后，success回调中可以获取到blackbox
+                console.log('blackbox: ', data)
+                blackbox = data
+                sendMeassage(data)
+            },                           
+        };
+        var cimg = new Image(1,1);
+        cimg.onload = function() {
+            _fmOpt.imgLoaded = true;
+        };
+        cimg.src = "https://fp.fraudmetrix.cn/fp/clear.png?partnerCode=tuhu&appName=tuhu_yidongzhan&tokenId=" + _fmOpt.token;
+    }
+    function insertScript() {
+    		var fm = document.createElement('script'); 
+        fm.type = 'text/javascript'; 
+        fm.async = true;
+        fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/v3/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(fm, s);
+        fm.onload = function () {
+            countScript = 0
+            zuceTD()
+            var timer = setInterval(function() {
+            		if (blackbox === "" && countScript < 2) {
+            			console.log(21)
+            			countScript++
+            			zuceTD()
+            		} else if (blackbox === "" && countScript >= 2) {
+            			countScript = 0
+            			console.log("注册失败")
+            			clearInterval(timer)
+            			sendMeassage("注册失败")
+            		} else {
+            			countScript = 0
+            			clearInterval(timer)
+            		}
+            }, 1000)
+        }
+		fm.onerror = function () {
+			if (countScript < 2) {
+				fm.remove()
+				countScript++
+				setTimeout(function() {
+					insertScript()
+				},10)
+			} else {
+				sendMeassage("注册失败")
+			}
+		}
+    }
+</script>
+
+</html>
